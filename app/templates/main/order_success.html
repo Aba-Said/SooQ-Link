@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تم تأكيد الطلب - SooQLink</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/sooqlink_logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles_order_success.css') }}">
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-card">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h1 class="success-title">🎉 تم تأكيد طلبك بنجاح!</h1>
+            <p class="success-message">شكراً لثقتك بنا، سنقوم بتجهيز طلبك وإرساله في أقرب وقت ممكن</p>
+            
+            <div class="order-details">
+                <h4>معلومات الطلب</h4>
+                <div class="detail-item">
+                    <span class="detail-label">كود الطلب:</span>
+                    <span class="detail-value">#{{ code_order }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">تاريخ الطلب:</span>
+                    <span class="detail-value">{{ order_date }}</span>
+                </div>                
+                <div class="detail-item">
+                    <span class="detail-label">طريقة الدفع:</span>
+                    <span class="detail-value">الدفع عند الاستلام</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">حالة الطلب:</span>
+                    <span class="detail-value" style="color: var(--accent-color);">قيد التجهيز</span>
+                </div>
+            </div>
+            
+            <a href="{{ url_for('main.index') }}" class="continue-btn">
+                <i class="fas fa-arrow-right"></i>
+                العودة إلى المتجر
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // تفريغ سلة التسوق بعد إتمام الطلب
+        localStorage.removeItem("cart");
+        
+        // تحديث عداد السلة في حالة وجوده
+        if (window.parent && window.parent.updateCartCount) {
+            window.parent.updateCartCount();
+        }
+    </script>
+</body>
+</html>

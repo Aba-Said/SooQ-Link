@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>البحث عن طلب - SooQLink</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/sooqlink_logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f8f9ff;
+            text-align: center;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+        .input-group {
+            display: flex;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .input-group input {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+        }
+        .input-group button {
+            background-color: #6C63FF;
+            color: white;
+            border: none;
+            padding: 0.8rem 1rem;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .order-info {
+            margin-top: 1.5rem;
+            text-align: right;
+            background: #f1f1f9;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        .order-info h4 {
+            color: #6C63FF;
+            margin-bottom: 1rem;
+        }
+        .error {
+            color: red;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🔍 البحث عن طلب</h2>
+        <form method="post">
+            <div class="input-group">
+                <input type="text" name="code_order" placeholder="أدخل رقم الطلب..." required>
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </div>
+        </form>
+
+        {% if order %}
+        <div class="order-info">
+            <h4>تفاصيل الطلب</h4>
+            <p><strong>رقم الطلب:</strong> {{ order.id }}</p>
+            <p><strong>كود الطلب:</strong> {{ order.code_order }}</p>
+            <p><strong>تاريخ الطلب:</strong> {{ order.order_date }}</p>
+            <p><strong>حالة الطلب:</strong> {{ order.status }}</p>
+            
+            <h4>معلومات العميل</h4>
+            <p><strong>الاسم:</strong> {{ order.name }}</p>
+            <p><strong>رقم الهاتف:</strong> {{ order.phone }}</p>
+            <p><strong>العنوان:</strong> {{ order.address }}</p>
+        </div>
+        {% elif error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+        
+
+    </div>
+</body>
+</html>

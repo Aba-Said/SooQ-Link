@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سلة التسوق - SooQLink</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/sooqlink_logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles_cart.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="cart-header">
+            <h1>سلة التسوق</h1>
+        </div>
+
+        <div id="cart-content">
+            <!-- سيتم تحميل المحتوى ديناميكيًا -->
+        </div>
+
+        <form id="checkout-form" action="{{ url_for('main.checkout') }}" method="post" class="checkout-form">
+            <h3>معلومات العميل</h3>
+            <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token') }}">
+            <input type="hidden" id="cart_data" name="cart_data">
+
+            <div class="form-group">
+                <label for="name">الاسم الكامل:</label>
+                <input type="text" id="name" name="name" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">رقم الهاتف:</label>
+                <input type="tel" id="phone" name="phone" class="form-control" pattern="[0-9]{10,15}" required>
+                <small>يرجى إدخال رقم هاتف صحيح مكون من 10 إلى 15 رقماً.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="address">العنوان التفصيلي:</label>
+                <input type="text" id="address" name="address" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="notes">ملاحظات إضافية (اختياري):</label>
+                <textarea id="notes" name="notes" class="form-control" rows="3"></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">تأكيد الطلب</button>
+        </form>
+    </div>
+
+    <!-- تمرير مسار الصور من السيرفر إلى الجافاسكريبت -->
+    <script>
+        const UPLOAD_BASE_URL = "{{ url_for('main.uploaded_file', filename='') }}";
+    </script>
+
+    <script src="{{ url_for('static', filename='js/script_cart.js') }}"></script>
+</body>
+
+</html>

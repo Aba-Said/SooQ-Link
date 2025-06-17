@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل المنتج - SooQ-Link</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/product_details.css') }}">
+</head>
+<body>
+    <header class="header">
+        <a href="{{url_for('admin.admin_login')}}" class="logo-link">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='images/sooqlink_logo.png') }}" alt="SooQLink Logo" loading="lazy">
+                <span class="logo-text">SooQLink</span>
+            </div>
+        </a>
+        
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="ابحث عن المنتجات..." aria-label="بحث عن المنتجات">
+            <button onclick="searchProducts()" aria-label="بحث">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+        
+        <div class="nav-icons">
+            <a href="{{ url_for('main.view_cart') }}" class="icon" aria-label="سلة التسوق">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count" id="cart-count">0</span>
+                <span class="icon-text">سلة التسوق</span>
+            </a>
+            
+            <a href="{{ url_for('merchant.login') }}" class="icon" aria-label="حسابي">
+                <i class="fas fa-user"></i>
+                <span class="icon-text">حسابي</span>
+            </a>
+            
+            <button class="menu-icon" onclick="toggleSidebar()" aria-label="فتح القائمة">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="close-btn" onclick="toggleSidebar()" aria-label="إغلاق القائمة">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav" aria-label="القائمة الرئيسية">
+            <ul>
+                <li><a href="{{ url_for('main.index') }}"><i class="fas fa-home"></i> الصفحة الرئيسية</a></li>
+                <li>
+                    <a href="#" id="dark-mode-toggle" role="button">
+                        <i class="fas fa-moon"></i> الوضع الليلي
+                    </a>
+                </li>                
+                <li><a href="{{ url_for('main.search_order') }}"><i class="fas fa-search"></i> البحث عن طلب</a></li>
+                <li><a href="{{ url_for('merchant.login') }}"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</a></li>
+                <li><a href="{{ url_for('merchant.register') }}"><i class="fas fa-user-plus"></i> إنشاء حساب</a></li>
+                <li class="category-title"><h2>التصنيفات</h2></li>
+                <li><a href="#encens-section"><i class="fas fa-spray-can"></i> عطور- بخور</a></li>
+                <li><a href="#phones-section"><i class="fas fa-mobile-alt"></i> الهواتف</a></li>
+                <li><a href="#electronics-section"><i class="fas fa-laptop"></i> أجهزة</a></li>
+                <li><a href="#fashion-section"><i class="fas fa-tshirt"></i> الأزياء</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <section class="products-container" style="max-width: 1000px; margin: 2rem auto;">
+            <div class="product-details">
+                <div class="product-gallery">
+                    <div class="main-image">
+                        <img src="{{ url_for('main.uploaded_file', filename=product.image) }}" alt="{{ product.name }}" loading="lazy">
+                    </div>
+                </div>
+                
+                <div class="product-info">
+                    <h1 class="product-title">{{ product.name }}</h1>
+                    
+                    <div class="product-meta">
+<span class="product-price" data-price="{{ product.price | float }}">{{ product.price }} د.ج</span>
+                        <span class="product-stock">{{ product.quantity }} متوفر في المخزن</span>
+                    </div>
+                    
+                    <div class="product-description">
+                        <h3>تفاصيل المنتج</h3>
+                        <p>فئة المنتج: {{ product.category }}</p>
+                        </div>
+                    
+                    <div class="product-actions">
+                        <button class="add-to-cart" onclick="addToCart('{{ product.id }}', '{{ product.name }}', '{{ product.price }}', '{{ product.image }}')">
+                            <i class="fas fa-shopping-cart"></i> أضف إلى السلة
+                        </button>
+                        
+                        <a href="{{ url_for('main.index') }}" class="back-btn">
+                            <i class="fas fa-arrow-left"></i> العودة
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>SooQLink</h3>
+                <p>منصة تسوق إلكتروني متكاملة تقدم أفضل المنتجات بأفضل الأسعار لعملائنا الكرام.</p>
+            </div>
+            
+            <div class="footer-grid">
+                <nav class="footer-links" aria-label="روابط سريعة">
+                    <h4>روابط سريعة</h4>
+                    <ul>
+                        <li><a href="#">عن الشركة</a></li>
+                        <li><a href="#">اتصل بنا</a></li>
+                        <li><a href="#">الشروط والأحكام</a></li>
+                        <li><a href="#">سياسة الخصوصية</a></li>
+                        <li><a href="#">الأسئلة الشائعة</a></li>
+                    </ul>
+                </nav>
+                
+                <div class="footer-contact">
+                    <h4>تواصل معنا</h4>
+                    <ul>
+                        <li><i class="fas fa-phone"></i> +123456789</li>
+                        <li><i class="fas fa-envelope"></i> info@sooqlink.com</li>
+                        <li><i class="fas fa-map-marker-alt"></i> المركز الجامعي علي كافي تيندوف</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-newsletter">
+                    <h4>النشرة البريدية</h4>
+                    <form>
+                        <input type="email" placeholder="بريدك الإلكتروني" aria-label="البريد الإلكتروني">
+                        <button type="submit">اشترك</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="social-icons">
+                <a href="#" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" aria-label="إنستغرام"><i class="fab fa-instagram"></i></a>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2025 SooQLink. جميع الحقوق محفوظة.
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    
+  
+</body>
+</html>
