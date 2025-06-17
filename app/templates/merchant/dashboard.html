@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - SooQLink</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/sooqlink_logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_dashboard.css') }}">
+</head>
+<body>
+    <!-- Logout Button -->
+    <div class="logout-section">
+        <form action="{{ url_for('merchant.logout') }}" method="POST">
+            <button type="submit" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+            </button>
+        </form>
+    </div>
+
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>لوحة التحكم</h1>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Quick Stats Cards -->
+        <div class="stats-cards">
+            <div class="stat-card">
+                <i class="fas fa-box-open"></i>
+                <h3>{{ products_count }}</h3>
+                <p>المنتجات</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-shopping-cart"></i>
+                <h3>{{ orders_count }}</h3>
+                <p>الطلبات</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-users"></i>
+                <h3>{{ users_count }}</h3>
+                <p>العملاء</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-money-bill-wave"></i>
+                <h3>{{ total_revenue }} د.ج</h3>
+                <p>إجمالي المبيعات</p>
+            </div>
+        </div>
+
+        <!-- Add New Product Section -->
+        <div class="dashboard-section">
+            <h2><i class="fas fa-plus-circle"></i> إضافة منتج جديد</h2>
+            <form action="{{ url_for('merchant.add_product') }}" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="name">اسم المنتج</label>
+                    <input type="text" id="name" name="name" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="price">السعر</label>
+                    <input type="number" id="price" name="price" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">الفئة</label>
+                    <select id="category" name="category" class="form-control" required>
+                        <option value="">اختر الفئة</option>
+                        <option value="electronics">أجهزة إلكترونية</option>
+                        <option value="fashion">أزياء</option>
+                        <option value="phones">هواتف</option>
+                        <option value="home">أثاث منزلي</option>
+                        <option value="encens">عطور - بخور</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="quantity">الكمية</label>
+                    <input type="number" id="quantity" name="quantity" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">الوصف</label>
+                    <textarea id="description" name="description" class="form-control" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="image">صورة المنتج</label>
+                    <input type="file" id="image" name="image" class="form-control" accept="image/*" required>
+                </div>
+                
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-save"></i> حفظ المنتج
+                </button>
+            </form>
+        </div>
+
+        <!-- Products Management Section -->
+        <div class="dashboard-section">
+            <h2><i class="fas fa-boxes"></i> إدارة المنتجات</h2>
+            <div style="overflow-x: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>الصورة</th>
+                            <th>الاسم</th>
+                            <th>السعر</th>
+                            <th>الفئة</th>
+                            <th>الكمية</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td><img src="{{ url_for('main.uploaded_file', filename=product.image) }}" alt="{{ product.name }}" class="product-image"></td>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.price }} د.ج</td>
+                            <td>{{ product.category }}</td>
+                            <td>{{ product.quantity }}</td>
+                            <td>
+                             <button class="action-btn edit-btn"
+                                  onclick="showEditModal({{ product.id }}, '{{ product.name }}', {{ product.price }}, '{{ product.category }}', {{ product.quantity }}, '{{ product.description|default('')|escape }}')">
+                                   <i class="fas fa-edit"></i> تعديل
+                             </button>
+                                <form action="{{ url_for('merchant.delete_product', product_id=product.id) }}" method="POST" style="display: inline;">
+                                    <button type="submit" class="action-btn delete-btn" onclick="return confirm('هل أنت متأكد من حذف هذا المنتج؟')">
+                                        <i class="fas fa-trash"></i> حذف
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <!-- Modal تعديل المنتج -->
+
+
+            </div>
+        </div>
+
+        <!-- Orders Management Section -->
+        <div class="dashboard-section">
+            <h2><i class="fas fa-cart-arrow-down"></i> إدارة الطلبات</h2>
+            <div style="overflow-x: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>رقم الطلب</th>
+                            <th>العميل</th>
+                            <th>المجموع</th>
+                            <th>الحالة</th>
+                            <th>تاريخ الطلب</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if orders %}
+                            {% for order in orders %}
+                                <tr>
+                                    <td>#{{ order.id }}</td>
+                                    <td>{{ order.customer_name }}</td>
+                                    <td>{{ order.total_price }} د.ج</td>
+                                    <td>
+                                        <span class="status-badge status-{{ order.status|lower }}">
+                                            {{ order.status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ order.order_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        <form action="{{ url_for('merchant.update_order_status', order_id=order.id) }}" method="POST" class="status-form">
+                                            <select name="status" class="form-control" style="width: auto; display: inline-block; margin-left: 0.5rem;">
+                                                <option value="completed" {% if order.status == 'completed' %}selected{% endif %}>مكتمل</option>
+                                                <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>قيد الانتظار</option>
+                                                <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>ملغى</option>
+                                            </select>
+                                            <button type="submit" class="action-btn edit-btn" style="margin-right: 0.5rem;">
+                                                <i class="fas fa-sync-alt"></i> تحديث
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" style="text-align: center;">لا توجد طلبات</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Product Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h2><i class="fas fa-edit"></i> تعديل المنتج</h2>
+            <form id="editForm" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="product_id" id="edit_id">
+                
+                <div class="form-group">
+                    <label for="edit_name">اسم المنتج</label>
+                    <input type="text" id="edit_name" name="name" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_price">السعر</label>
+                    <input type="number" id="edit_price" name="price" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_category">الفئة</label>
+                    <select id="edit_category" name="category" class="form-control" required>
+                        <option value="electronics">أجهزة إلكترونية</option>
+                        <option value="fashion">أزياء</option>
+                        <option value="phones">هواتف</option>
+                        <option value="home">أثاث منزلي</option>
+                        <option value="encens">عطور - بخور</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_quantity">الكمية</label>
+                    <input type="number" id="edit_quantity" name="quantity" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_description">الوصف</label>
+                    <textarea id="edit_description" name="description" class="form-control" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_image">تغيير الصورة (اختياري)</label>
+                    <input type="file" id="edit_image" name="image" class="form-control" accept="image/*">
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-save"></i> حفظ التغييرات
+                    </button>
+                    <button type="button" onclick="closeModal()" class="submit-btn" style="background: var(--gray-color);">
+                        <i class="fas fa-times"></i> إلغاء
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+   <script>
+    function showEditModal(id, name, price, category, quantity, description) {
+        // تعبئة النموذج بالقيم الحالية
+        document.getElementById('edit_id').value = id;
+        document.getElementById('edit_name').value = name;
+        document.getElementById('edit_price').value = price;
+        document.getElementById('edit_category').value = category;
+        document.getElementById('edit_quantity').value = quantity;
+        document.getElementById('edit_description').value = description;
+
+        // تحديد المسار لتعديل المنتج
+        document.getElementById('editForm').action = "/update_product/" + id;
+
+        // عرض المودال
+        document.getElementById('editModal').style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('editModal').style.display = 'none';
+    }
+</script>
+
+
+</body>
+</html>
